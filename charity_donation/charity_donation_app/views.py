@@ -1,4 +1,3 @@
-from itertools import count
 from django.views import View
 from django.shortcuts import render
 from charity_donation_app.models import Donation, Institution
