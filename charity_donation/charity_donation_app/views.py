@@ -21,12 +21,20 @@ class LandingView(View):
             return len(Donation.objects.values('institution_id').distinct())
 
 
+        all_instit_foun = Institution.objects.filter(type='foundation')
+        all_instit_nongov = Institution.objects.filter(type='non-gov organization')
+        all_instit_locfun = Institution.objects.filter(type='local fundraising')
+
+
         return render(
             request,
             'index.html',
             context={
                 'package_count': count_packages(),
-                'institutions': count_donated_institutions()
+                'institutions': count_donated_institutions(),
+                'all_instit_foun': all_instit_foun,
+                'all_instit_nongov': all_instit_nongov,
+                'all_instit_locfun': all_instit_locfun
             }
         )
 

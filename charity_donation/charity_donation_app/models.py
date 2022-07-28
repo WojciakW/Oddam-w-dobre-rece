@@ -33,6 +33,11 @@ class Institution(models.Model):
         to='Category',
     )
 
+    def display_all_categories_separated(self):
+        return ', '.join(
+            [category.name for category in self.categories.all()]
+        )
+
 
 class Donation(models.Model):
 
