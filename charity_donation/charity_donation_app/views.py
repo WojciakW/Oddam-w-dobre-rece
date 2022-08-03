@@ -88,4 +88,4 @@ class RegisterView(View):
             password=       register_data['password']
         )
 
-        return redirect('/')
+        return redirect('/login/')
