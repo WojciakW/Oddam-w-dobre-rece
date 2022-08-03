@@ -34,5 +34,9 @@ urlpatterns = [
     path(
         'add_donation/',
         views.AddDonationView.as_view()
+    ),
+    path(
+        'logout/',
+        views.LogoutView.as_view()
     )
 ]
