@@ -1,7 +1,18 @@
 from django.views import View
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 from charity_donation_app.models import Donation, Institution
 from django.contrib.auth.models import User
+
+
+# cache for multiple login/register operations
+credential_data = {
+    'name':         None,
+    'surname':      None,
+    'email':        None,
+    'password':     None,
+    'password2':    None
+}
 
 
 class LandingView(View):
@@ -55,6 +66,27 @@ class LoginView(View):
             request,
             'login.html'
         )
+    
+    def post(self, request):
+
+        credential_data['email'] =      request.POST.get('email')
+        credential_data['password'] =   request.POST.get('password')
+
+        user = authenticate(
+            username=   credential_data['email'],
+            password=   credential_data['password']
+        )
+
+        if user:
+            login(
+                request,
+                user
+            )
+
+            return redirect('/')
+        
+        else:
+            return redirect('/register/')
 
 
 class RegisterView(View):
@@ -66,13 +98,12 @@ class RegisterView(View):
         )
 
     def post(self, request):
-        register_data = {
-            'name':         request.POST.get('name'),
-            'surname':      request.POST.get('surname'),
-            'password':     request.POST.get('password'),
-            'password2':    request.POST.get('password2'),
-            'email':        request.POST.get('email')
-        }
+
+        credential_data['name'] =       request.POST.get('name')
+        credential_data['surname'] =    request.POST.get('surname')
+        credential_data['email'] =      request.POST.get('email')
+        credential_data['password'] =   request.POST.get('password')
+        credential_data['password2'] =  request.POST.get('password2')
 
 
         # validation placeholder
@@ -81,11 +112,11 @@ class RegisterView(View):
 
 
         User.objects.create_user(
-            username=       register_data['email'],
-            first_name=     register_data['name'],
-            last_name=      register_data['surname'],
-            email=          register_data['email'],
-            password=       register_data['password']
+            username=       credential_data['email'],
+            first_name=     credential_data['name'],
+            last_name=      credential_data['surname'],
+            email=          credential_data['email'],
+            password=       credential_data['password']
         )
 
         return redirect('/login/')
