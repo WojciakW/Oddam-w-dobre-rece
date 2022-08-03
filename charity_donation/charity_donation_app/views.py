@@ -1,5 +1,5 @@
 from django.views import View
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from charity_donation_app.models import Donation, Institution
 from django.contrib.auth.models import User
 
@@ -64,3 +64,28 @@ class RegisterView(View):
             request,
             'register.html'
         )
+
+    def post(self, request):
+        register_data = {
+            'name':         request.POST.get('name'),
+            'surname':      request.POST.get('surname'),
+            'password':     request.POST.get('password'),
+            'password2':    request.POST.get('password2'),
+            'email':        request.POST.get('email')
+        }
+
+
+        # validation placeholder
+        def validate_data(self):
+            pass
+
+
+        User.objects.create_user(
+            username=       register_data['email'],
+            first_name=     register_data['name'],
+            last_name=      register_data['surname'],
+            email=          register_data['email'],
+            password=       register_data['password']
+        )
+
+        return redirect('/')
