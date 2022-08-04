@@ -1,7 +1,7 @@
 from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from charity_donation_app.models import Donation, Institution
+from charity_donation_app.models import Donation, Institution, Category
 from django.contrib.auth.models import User
 
 
@@ -53,10 +53,20 @@ class LandingView(View):
 class AddDonationView(View):
 
     def get(self, request):
-        return render(
-            request,
-            'form.html'
-        )
+
+        if request.user.is_authenticated:
+            all_categories = Category.objects.all()
+
+            return render(
+                request,
+                'form.html',
+                context={
+                    'all_categories':   all_categories
+                }
+            )
+        
+        else:
+            return redirect('/login/')
 
 
 class LoginView(View):

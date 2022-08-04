@@ -9,7 +9,7 @@
     <link rel="stylesheet" href='{% static "/css/style.css" %}' />
   </head>
   <body>
-    <header>
+    <header class="header--main-page">
       <nav class="container container--70">
         {% if user.is_authenticated %}
         <ul class="nav--actions">
@@ -37,8 +37,14 @@
           <li><a href="/#contact" class="btn btn--without-border">Kontakt</a></li>
         </ul>
       </nav>
-      {% block header %}
-      {% endblock %}
+      <div class="slogan container container--90">
+        <div class="slogan--item">
+          <h1>
+            Zacznij pomagać!<br />
+            Oddaj niechciane rzeczy w zaufane ręce
+          </h1>
+        </div>
+      </div>
     </header>
       {% block content %}
       {% endblock %}
