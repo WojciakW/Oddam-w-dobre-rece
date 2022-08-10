@@ -36,6 +36,10 @@ urlpatterns = [
         views.AddDonationView.as_view()
     ),
     path(
+        'donation_confirm/',
+        views.DonationConfirmView.as_view()
+    ),
+    path(
         'logout/',
         views.LogoutView.as_view()
     )

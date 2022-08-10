@@ -1,3 +1,4 @@
+from ctypes import addressof
 from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -27,15 +28,12 @@ class LandingView(View):
             
             return count
 
-
         def count_donated_institutions():
             return len(Donation.objects.values('institution_id').distinct())
-
 
         all_instit_foun = Institution.objects.filter(type='foundation')
         all_instit_nongov = Institution.objects.filter(type='non-gov organization')
         all_instit_locfun = Institution.objects.filter(type='local fundraising')
-
 
         return render(
             request,
@@ -69,6 +67,41 @@ class AddDonationView(View):
         
         else:
             return redirect('/login/')
+
+    def post(self, request):
+
+        new_donation = Donation(
+            quantity=           request.POST.get('bags'),
+            institution_id=     request.POST.get('institution'),
+            address=            request.POST.get('address'),
+            phone_number=       request.POST.get('phone'),
+            city=               request.POST.get('city'),
+            zip_code=           request.POST.get('postcode'),
+            pick_up_date=       request.POST.get('data'),
+            pick_up_time=       request.POST.get('time'),
+            pick_up_comment=    request.POST.get('more_info'),
+            user_id=            request.user.id
+        )
+
+        categories_list = request.POST.getlist('categories')
+
+        new_donation.save()
+
+        for category in categories_list:
+            new_donation.categories.add(category)
+
+        new_donation.save()
+
+        return redirect('/donation_confirm/')
+
+
+class DonationConfirmView(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'form-confirmation.html'
+        )
 
 
 class LoginView(View):
