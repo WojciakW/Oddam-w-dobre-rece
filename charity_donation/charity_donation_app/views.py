@@ -5,7 +5,7 @@ from charity_donation_app.models import Donation, Institution, Category
 from django.contrib.auth.models import User
 
 
-# cache for multiple login/register operations
+# global cache for multiple login/register operations
 credential_data = {
     'name':         None,
     'surname':      None,
@@ -56,12 +56,14 @@ class AddDonationView(View):
 
         if request.user.is_authenticated:
             all_categories = Category.objects.all()
+            all_institutions = Institution.objects.all()
 
             return render(
                 request,
                 'form.html',
                 context={
-                    'all_categories':   all_categories
+                    'all_categories':   all_categories,
+                    'all_institutions': all_institutions
                 }
             )
         

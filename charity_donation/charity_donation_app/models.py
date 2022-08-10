@@ -10,10 +10,14 @@ class Category(models.Model):
 
 class Institution(models.Model):
 
+    FOUNDATION = 'foundation'
+    NON_GOV = 'non-gov organization'
+    LOCAL_FUND = 'local fundraising'
+
     TYPE_CHOICES = [
-        ('foundation', 'Fundacja'),
-        ('non-gov organization', 'Organizacja pozarządowa'),
-        ('local fundraising', 'Zbiórka lokalna')
+        (FOUNDATION, 'Fundacja'),
+        (NON_GOV, 'Organizacja pozarządowa'),
+        (LOCAL_FUND, 'Zbiórka lokalna')
     ]
 
 

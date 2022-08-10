@@ -172,6 +172,10 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$prev = form.querySelectorAll(".prev-step");
       this.$step = form.querySelector(".form--steps-counter span");
       this.currentStep = 1;
+      this.$checkbox = form.querySelectorAll('input[type="checkbox"]');
+      this.$div = form.querySelector('div[data-step="3"]').querySelectorAll('.form-group--checkbox');
+
+      this.categories = this.setupCategories();
 
       this.$stepInstructions = form.querySelectorAll(".form--steps-instructions p");
       const $stepForms = form.querySelectorAll("form > div");
@@ -198,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function() {
           e.preventDefault();
           this.currentStep++;
           this.updateForm();
+          this.getCategoryData();
         });
       });
 
@@ -207,6 +212,7 @@ document.addEventListener("DOMContentLoaded", function() {
           e.preventDefault();
           this.currentStep--;
           this.updateForm();
+          this.getCategoryData();
         });
       });
 
@@ -234,8 +240,107 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
+
+      if (this.currentStep === 3) {
+
+        let filteredCategories = [];
+
+        for (const [id, value] of Object.entries(this.categories)) {
+
+          if (value[0] === true) {
+            filteredCategories.push(id);
+
+          }
+        }
+        
+        for (const div of this.$div) {
+          let institutionCategories = [];
+
+          div.hidden = true;
+
+          for (const category of div.querySelectorAll('.categories')) {
+            institutionCategories.push(category.innerText);
+            }
+
+          if (filteredCategories.every(elem => institutionCategories.includes(elem))) {
+            div.hidden = false;
+          }
+        }
+
+      }
+
+      if (this.currentStep === 5){
+        const bagCount = this.$form.querySelector('input[name="bags"]').value;
+        let categoriesNames = '';
+        
+        for (const entry of Object.entries(this.categories)){
+          if (entry[1][0] === true) {
+            categoriesNames += entry[1][1];
+            categoriesNames += ', ';
+          }
+        }
+        
+        categoriesNames = categoriesNames.slice(0, -2);
+
+        const address = this.$form.querySelector('input[name="address"]').value;
+        const city = this.$form.querySelector('input[name="city"]').value;
+        const postCode = this.$form.querySelector('input[name="postcode"]').value;
+        const phone = this.$form.querySelector('input[name="phone"]').value;
+        const data = this.$form.querySelector('input[name="data"]').value;
+        const time = this.$form.querySelector('input[name="time"]').value;
+        const moreInfo = this.$form.querySelector('textarea[name="more_info"]').value;
+
+        this.$form.querySelector('#bag-info').innerText = `${bagCount}x worek zawierający ${categoriesNames}`
+        this.$form.querySelector('#institution-info').innerText = this.$form.querySelector('input[name="institution"]:checked').parentElement.querySelector('.title').innerText;
+        this.$form.querySelector('#address').innerText = address;
+        this.$form.querySelector('#city').innerText = city;
+        this.$form.querySelector('#post-code').innerText = postCode;
+        this.$form.querySelector('#phone').innerText = phone;
+        this.$form.querySelector('#date').innerText = data;
+        this.$form.querySelector('#time').innerText = time;
+        
+        if (!moreInfo) {
+          this.$form.querySelector('#more-info').innerText = 'Brak uwag'
+        }
+        else {
+          this.$form.querySelector('#more-info').innerText = 'Uwagi dla kuriera: ' + moreInfo
+        }
+
+      }
+
       // TODO: get data from inputs and show them in summary
     }
+
+    setupCategories() {
+
+      const categories = {}
+
+      for (const category of this.$checkbox){
+        const inputValue = category.value;
+        categories[inputValue] = [false, category.parentElement.querySelector('.description').innerText]
+      }
+
+      return categories;
+    }
+
+
+    getCategoryData() {
+
+      for (const input of this.$checkbox) {
+
+        const inputValue = input.value;
+
+        if (input.checked === true) {
+          this.categories[inputValue][0] = true;
+        }
+        else {
+          this.categories[inputValue][0] = false;
+        }
+
+      }
+
+    }
+
 
     /**
      * Submit form
