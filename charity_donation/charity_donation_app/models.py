@@ -7,6 +7,9 @@ class Category(models.Model):
         max_length=64
     )
 
+    def __str__(self) -> str:
+        return f'{self.name}'
+
 
 class Institution(models.Model):
 
@@ -41,6 +44,9 @@ class Institution(models.Model):
         return ', '.join(
             [category.name for category in self.categories.all()]
         )
+
+    def __str__(self) -> str:
+        return f'{self.get_type_display()} "{self.name}"'
 
 
 class Donation(models.Model):
