@@ -9,14 +9,14 @@
     <link rel="stylesheet" href='{% static "/css/style.css" %}' />
   </head>
   <body>
-    <header>
+    <header class="header--form-page">
       <nav class="container container--70">
         {% if user.is_authenticated %}
         <ul class="nav--actions">
           <li class="logged-user">
             Witaj {{ user.first_name }}
             <ul class="dropdown">
-              <li><a href="#">Profil</a></li>
+              <li><a href="/profile/">Profil</a></li>
               <li><a href="#">Ustawienia</a></li>
               <li><a href="/logout/">Wyloguj</a></li>
               {% if user.is_superuser %}

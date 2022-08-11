@@ -1,9 +1,9 @@
-from ctypes import addressof
 from django.views import View
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from charity_donation_app.models import Donation, Institution, Category
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 
 
 # global cache for multiple login/register operations
@@ -173,3 +173,23 @@ class LogoutView(View):
         logout(request)
 
         return redirect('/')
+
+
+class ProfileView(View):
+
+    def get(self, request):
+
+        if request.user.is_authenticated:
+
+            user = request.user
+
+            return render(
+                request,
+                'user_profile.html',
+                context={
+                    'user': user
+                }
+            )
+
+        else:
+            raise PermissionDenied()
