@@ -1832,20 +1832,47 @@ footer .bottom-line--icons a img {
   justify-content: center;
 }
 
+.user-donations {
+  font-size: 2rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
 table {
   display: flex;
   justify-content: center;
   width: 100%;
 
 }
-tbody {
+
+
+.table-profile {
   width: 30vw;
+  border: 1px solid black;
 }
 
-tr {
+
+/* td {
+  display: flex;
+  justify-content: space-between;
+  text-align: -internal-center;
+} */
+
+.profile {
   padding: 2rem;
   display: flex;
   justify-content: space-between;
+}
+
+td {
+  padding: 2rem;
+}
+
+.table-donations {
+  table-layout: fixed;
+  border: 1px solid black;
+  padding: 2rem;
 }
 
 

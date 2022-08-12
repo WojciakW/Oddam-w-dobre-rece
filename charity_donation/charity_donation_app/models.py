@@ -89,3 +89,8 @@ class Donation(models.Model):
         default=None,
         null=True
     )
+
+    def display_all_categories_separated(self):
+        return ', '.join(
+            [category.name for category in self.categories.all()]
+        )

@@ -182,12 +182,17 @@ class ProfileView(View):
         if request.user.is_authenticated:
 
             user = request.user
+            user_donations = Donation.objects.filter(user_id=user.id)
+
+            print(user_donations)
+
 
             return render(
                 request,
                 'user_profile.html',
                 context={
-                    'user': user
+                    'user': user,
+                    'user_donations': user_donations
                 }
             )
 
