@@ -90,6 +90,11 @@ class Donation(models.Model):
         null=True
     )
 
+    is_taken = models.BooleanField(
+        default=False,
+        null=True,
+    )
+
     def display_all_categories_separated(self):
         return ', '.join(
             [category.name for category in self.categories.all()]

@@ -873,6 +873,14 @@ header.header--form-page {
   height: 100vh;
 }
 
+header.header--profile-page {
+  background-image: linear-gradient(to bottom, transparent, #ffffff), url(../images/header-form-bg.jpg);
+
+
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+
+}
 /* line 23, scss/modules/_header.scss */
 header .slogan {
   height: calc(100% - 141px);
@@ -1873,6 +1881,20 @@ td {
   table-layout: fixed;
   border: 1px solid black;
   padding: 2rem;
+}
+
+.taken {
+  color: rgb(0, 126, 27);
+  font-weight: bold;
+}
+
+.pending {
+  color: rgb(184, 135, 0);
+  font-weight: bold;
+}
+
+.section-donations {
+  padding-bottom: 50px;
 }
 
 

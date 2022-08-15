@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from charity_donation_app.models import Donation, Institution, Category
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
 
 
 # global cache for multiple login/register operations
@@ -182,7 +183,7 @@ class ProfileView(View):
         if request.user.is_authenticated:
 
             user = request.user
-            user_donations = Donation.objects.filter(user_id=user.id)
+            user_donations = Donation.objects.filter(user_id=user.id).order_by('is_taken')
 
             print(user_donations)
 
@@ -194,6 +195,36 @@ class ProfileView(View):
                     'user': user,
                     'user_donations': user_donations
                 }
+            )
+
+        else:
+            raise PermissionDenied()
+    
+    def post(self, request):
+
+        if request.user.is_authenticated:
+            
+            donation_id = request.POST.get('donation')
+            donation = get_object_or_404(Donation, id=donation_id)
+
+            donation.is_taken = True
+            donation.save()
+
+            return redirect('/profile/')
+
+        else:
+            raise PermissionDenied()
+
+
+class SettingsView(View):
+
+    def get(self, request):
+
+        if request.user.is_authenticated:
+            
+            return render(
+                request,
+                'settings.html'
             )
 
         else:

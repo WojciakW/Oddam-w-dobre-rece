@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_profile.html' %}
 {% block header %}
 <section class="">
       <h2>Twój profil</h2>
@@ -24,35 +24,7 @@
       </div>
       
 </section>
-<section>
-  <h2>Dary przekazane przez Ciebie</h2>
-  <div class="profile-info user-donations">
-        <table>
-          <tbody class="table-donations">
-          <tr>
-            <th>Liczba worków</th>
-            <th>Zawartość</th>
-            <th>Organizacja</th>
-            <th>Termin odbioru</th>
-            <th>Status</th>
-          </tr>
-          {% if user_donations %}
-            {% for donation in user_donations %}
-            <tr class="tr-donation">
-              <td>{{ donation.quantity }}</td>
-              <td>
-                {{ donation.display_all_categories_separated }}
-              </td>
-              <td>{{ donation.institution.name }}</td>
-              <td>{{ donation.pick_up_date }} {{ donation.pick_up_time }}</td>
-              <td>Odebrane</td>
-            </tr>
-            {% endfor %}
-          {% endif %}
-        </tbody>
-        </table>
-    </div>
-</section>
+
 {% endblock %}
 {% block content %}
   <body>
@@ -72,7 +44,48 @@
         </ul>
       </nav>
     </header> {% endcomment %}
-
+    <section class="section-donations">
+      <h2>Twoje dary</h2>
+      <div class="profile-info user-donations">
+            <table>
+              <tbody class="table-donations">
+              <tr>
+                <th>Liczba worków</th>
+                <th>Zawartość</th>
+                <th>Organizacja</th>
+                <th>Termin odbioru</th>
+                <th>Status</th>
+              </tr>
+              {% if user_donations %}
+                {% for donation in user_donations %}
+                <tr class="tr-donation">
+                  <td>{{ donation.quantity }}</td>
+                  <td>
+                    {{ donation.display_all_categories_separated }}
+                  </td>
+                  <td>{{ donation.institution.name }}</td>
+                  <td>{{ donation.pick_up_date }} {{ donation.pick_up_time }}</td>
+                  {% if donation.is_taken %}
+                  <td class="taken">Odebrane</td>
+                  
+                  {% else %}
+                  <td class="pending">Oczekujące na odebranie</td>
+                  <td>
+                    <form method="POST" id="donation-form" onsubmit="return confirm('Czy na pewno chcesz oznaczyć dary jako przekazane?')">
+                      {% csrf_token %}
+                      <input type="text" hidden name="donation" value="{{ donation.id }}">
+                      <button type="submit" class="btn">Oznacz jako przekazane 	&#10003;</button>
+                    </form>
+                  </td>
+                  {% endif %}
+                  
+                </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+            </table>
+        </div>
+    </section>
     
     
 
