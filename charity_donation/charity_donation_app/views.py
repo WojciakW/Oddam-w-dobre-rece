@@ -8,7 +8,14 @@ from django.shortcuts import get_object_or_404
 
 
 class CredentialValidator:
+    """
+        Static validation handling class.
 
+        Implemented to provide abstraction and better app scalability.
+
+    """
+    
+    # global registration/login cache
     credential_data = {
         'name':         '',
         'surname':      '',
@@ -20,6 +27,10 @@ class CredentialValidator:
 
     @staticmethod
     def validate_username():
+        """
+            Checks if given user already exists.
+
+        """
 
         try: 
             User.objects.get(username=CredentialValidator.credential_data['email'])
@@ -30,11 +41,18 @@ class CredentialValidator:
 
     @staticmethod
     def validate_password():
+        """
+            Does a few tests:
+                - if two given passwords are the same,
+                - if given password is not too short (less than 8 char),
+                - if password is empty
+
+        """
 
         tests = {
-            'same_password': False,
-            'long_password': False,
-            'not_null_password': False
+            'same_password':        False,
+            'long_password':        False,
+            'not_null_password':    False
         }
         
         if CredentialValidator.credential_data['password'] == CredentialValidator.credential_data['password2']:
@@ -59,6 +77,10 @@ class CredentialValidator:
 
     @staticmethod
     def validate_email():
+        """
+            Checks if given email contains '@' sign.
+
+        """
 
         if '@' not in CredentialValidator.credential_data['email']:
             return False
@@ -66,7 +88,11 @@ class CredentialValidator:
         return True
     
     @staticmethod
-    def validation_output(*args, **kwargs):
+    def validation_output(*args):
+        """
+            Collects all the validation cases strictly specified as args in form of PL-lang user messages list.
+
+        """
 
         msg = []
 
@@ -103,7 +129,11 @@ class LandingView(View):
 
     def get(self, request):
         
-        def count_packages():
+        def count_bags():
+            """
+                Returns total count of donated bags.
+
+            """
             count = 0
 
             for donation in Donation.objects.values('quantity'):
@@ -112,6 +142,10 @@ class LandingView(View):
             return count
 
         def count_donated_institutions():
+            """
+                Returns total count of unique institutions in all the donations.
+                
+            """
             return len(Donation.objects.values('institution_id').distinct())
 
         all_instit_foun =   Institution.objects.filter(type='foundation')
@@ -122,7 +156,7 @@ class LandingView(View):
             request,
             'index.html',
             context={
-                'package_count':        count_packages(),
+                'package_count':        count_bags(),
                 'institutions':         count_donated_institutions(),
                 'all_instit_foun':      all_instit_foun,
                 'all_instit_nongov':    all_instit_nongov,
