@@ -49,5 +49,17 @@ urlpatterns = [
     path(
         'profile/',
         views.ProfileView.as_view()
+    ),
+    path(
+        'settings/',
+        views.SettingsView.as_view()
+    ),
+    path(
+        'change_password/',
+        views.ChangePasswordView.as_view()
+    ),
+    path(
+        'change_data/',
+        views.ChangeUserDataView.as_view()
     )
 ]

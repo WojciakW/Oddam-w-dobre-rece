@@ -353,27 +353,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  // class DonationSubmit{
-  //   constructor() {
-  //     this.$form = document.querySelector('#donation-form');
-  //     this.$button = this.$form.querySelector('button');
-
-  //     this.init();
-  //   }
-
-  //   init() {
-  //     this.$form.addEventListener('click', function(event){
-        
-  //     });
-  //     console.log('dupa')
-  //   }
-  // }
-
-  // const donationSubmit = document.querySelector("#donation-form");
-  // if (donationSubmit !== null) {
-  //   new DonationSubmit;
-  // }
-
   const form = document.querySelector(".form--steps");
   if (form !== null) {
     new FormSteps(form);

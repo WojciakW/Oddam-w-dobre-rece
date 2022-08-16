@@ -7,14 +7,94 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 
 
-# global cache for multiple login/register operations
-credential_data = {
-    'name':         None,
-    'surname':      None,
-    'email':        None,
-    'password':     None,
-    'password2':    None
-}
+class CredentialValidator:
+
+    credential_data = {
+        'name':         '',
+        'surname':      '',
+        'email':        '',
+        'password':     '',
+        'password2':    ''
+    }
+        
+
+    @staticmethod
+    def validate_username():
+
+        if User.objects.get(username=CredentialValidator.credential_data['email']):
+            return False
+        
+        return True
+
+    @staticmethod
+    def validate_password():
+
+        tests = {
+            'same_password': False,
+            'long_password': False,
+            'not_null_password': False
+        }
+        
+        if CredentialValidator.credential_data['password'] == CredentialValidator.credential_data['password2']:
+            tests['same_password'] = True
+
+        if len(CredentialValidator.credential_data['password']) >= 8:
+            tests['long_password'] = True
+
+        if CredentialValidator.credential_data['password'] != '':
+            tests['not_null_password'] = True
+
+        if False in tests.values():
+            return (
+                tests,
+                False
+            )
+        
+        return (
+            None,
+            True
+        )
+
+    @staticmethod
+    def validate_email():
+
+        if '@' not in CredentialValidator.credential_data['email']:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validation_output(*args, **kwargs):
+
+        msg = []
+
+        if 'username' in args:
+            is_valid_username = CredentialValidator.validate_username()
+
+            if not is_valid_username:
+                msg.append("Użytkownik o podanym adresie email już istnieje")
+        
+        if 'password' in args:
+            password_validation = CredentialValidator.validate_password()
+            is_valid_password = password_validation[1]
+
+            if not is_valid_password:
+                if not password_validation[0].get('same_password'):
+                    msg.append("Podane hasła nie są takie same")
+                
+                if not password_validation[0].get('long_password'):
+                    msg.append("Podane hasło jest za krótkie (co najmniej 8 znaków)")
+                
+                if not password_validation[0].get('not_null_password'):
+                    msg.append("Hasło nie może być puste")
+        
+        if 'email' in args:
+            is_valid_email = CredentialValidator.validate_email()
+        
+            if not is_valid_email:
+                msg.append("Niepoprawna forma adresu email")
+
+        return msg
 
 
 class LandingView(View):
@@ -32,7 +112,7 @@ class LandingView(View):
         def count_donated_institutions():
             return len(Donation.objects.values('institution_id').distinct())
 
-        all_instit_foun = Institution.objects.filter(type='foundation')
+        all_instit_foun =   Institution.objects.filter(type='foundation')
         all_instit_nongov = Institution.objects.filter(type='non-gov organization')
         all_instit_locfun = Institution.objects.filter(type='local fundraising')
 
@@ -40,11 +120,11 @@ class LandingView(View):
             request,
             'index.html',
             context={
-                'package_count': count_packages(),
-                'institutions': count_donated_institutions(),
-                'all_instit_foun': all_instit_foun,
-                'all_instit_nongov': all_instit_nongov,
-                'all_instit_locfun': all_instit_locfun
+                'package_count':        count_packages(),
+                'institutions':         count_donated_institutions(),
+                'all_instit_foun':      all_instit_foun,
+                'all_instit_nongov':    all_instit_nongov,
+                'all_instit_locfun':    all_instit_locfun
             }
         )
 
@@ -115,12 +195,12 @@ class LoginView(View):
     
     def post(self, request):
 
-        credential_data['email'] =      request.POST.get('email')
-        credential_data['password'] =   request.POST.get('password')
+        CredentialValidator.credential_data['email'] =      request.POST.get('email')
+        CredentialValidator.credential_data['password'] =   request.POST.get('password')
 
         user = authenticate(
-            username=   credential_data['email'],
-            password=   credential_data['password']
+            username=   CredentialValidator.credential_data['email'],
+            password=   CredentialValidator.credential_data['password']
         )
 
         if user:
@@ -145,11 +225,11 @@ class RegisterView(View):
 
     def post(self, request):
 
-        credential_data['name'] =       request.POST.get('name')
-        credential_data['surname'] =    request.POST.get('surname')
-        credential_data['email'] =      request.POST.get('email')
-        credential_data['password'] =   request.POST.get('password')
-        credential_data['password2'] =  request.POST.get('password2')
+        CredentialValidator.credential_data['name'] =       request.POST.get('name')
+        CredentialValidator.credential_data['surname'] =    request.POST.get('surname')
+        CredentialValidator.credential_data['email'] =      request.POST.get('email')
+        CredentialValidator.credential_data['password'] =   request.POST.get('password')
+        CredentialValidator.credential_data['password2'] =  request.POST.get('password2')
 
 
         # validation placeholder
@@ -158,11 +238,11 @@ class RegisterView(View):
 
 
         User.objects.create_user(
-            username=       credential_data['email'],
-            first_name=     credential_data['name'],
-            last_name=      credential_data['surname'],
-            email=          credential_data['email'],
-            password=       credential_data['password']
+            username=       CredentialValidator.credential_data['email'],
+            first_name=     CredentialValidator.credential_data['name'],
+            last_name=      CredentialValidator.credential_data['surname'],
+            email=          CredentialValidator.credential_data['email'],
+            password=       CredentialValidator.credential_data['password']
         )
 
         return redirect('/login/')
@@ -184,9 +264,6 @@ class ProfileView(View):
 
             user = request.user
             user_donations = Donation.objects.filter(user_id=user.id).order_by('is_taken')
-
-            print(user_donations)
-
 
             return render(
                 request,
@@ -224,8 +301,118 @@ class SettingsView(View):
             
             return render(
                 request,
-                'settings.html'
+                'user_settings.html'
             )
 
         else:
             raise PermissionDenied()
+
+
+class ChangePasswordView(View):
+
+    def get(self, request):
+
+        if request.user.is_authenticated:
+
+            return render(
+                request,
+                'user_change_password.html'
+            )
+        
+        else:
+            raise PermissionDenied()
+    
+    def post(self, request):
+
+        user_authenticate = authenticate(
+            username=request.user.username,
+            password=request.POST.get('old_password')
+        )
+
+        if not user_authenticate:
+            msg = ["Nieprawidłowe obecne hasło"]
+
+            return render(
+                request,
+                'user_change_password.html',
+                context={
+                    'msg': msg
+                }
+            )
+        
+        else:     
+            CredentialValidator.credential_data['password']     = request.POST.get('new_password')
+            CredentialValidator.credential_data['password2']    = request.POST.get('new_password2')
+
+            msg = CredentialValidator.validation_output('password')
+
+            if msg == []:
+                user = User.objects.get(id=request.user.id)
+                user.set_password(CredentialValidator.credential_data['password'])
+                user.save()
+
+                authenticate(
+                    username=user.username,
+                    password=user.password
+                )
+
+                login(
+                    request,
+                    user
+                )
+
+                return redirect('/settings/')
+            
+            else:
+                return render(
+                    request,
+                    'user_change_password.html',
+                    context={
+                        'msg': msg
+                    }
+                )
+
+
+class ChangeUserDataView(View):
+
+    def get(self, request):
+
+        if request.user.is_authenticated:
+
+            return render (
+                request,
+                'user_change_data.html',
+                context ={
+                    'user': request.user
+                }
+            )
+        
+        else:
+            raise PermissionDenied()
+
+    def post(self, request):
+
+        user_authenticate = authenticate(
+            username=request.user.username,
+            password=request.POST.get('password')
+        )
+
+        if not user_authenticate:
+            msg = ["Nieprawidłowe hasło"]
+
+            return render(
+                request,
+                'user_change_data.html',
+                context={
+                    'msg': msg
+                }
+            )
+        
+        else:
+            user = request.user
+
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.save()
+
+            return redirect('/settings/')
