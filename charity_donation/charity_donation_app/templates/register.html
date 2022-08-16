@@ -37,6 +37,13 @@
         <div class="form-group">
           <input type="password" name="password2" placeholder="Powtórz hasło" />
         </div>
+        {% if msg %}
+          {% for message in msg %}
+          <div class="form-group">
+            {{ message }}
+          </div>
+          {% endfor %}
+        {% endif %}
 
         <div class="form-group form-group--buttons">
           <a href="/login/" class="btn btn--without-border">Zaloguj się</a>

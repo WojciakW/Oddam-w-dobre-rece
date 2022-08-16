@@ -21,10 +21,12 @@ class CredentialValidator:
     @staticmethod
     def validate_username():
 
-        if User.objects.get(username=CredentialValidator.credential_data['email']):
+        try: 
+            User.objects.get(username=CredentialValidator.credential_data['email'])
             return False
         
-        return True
+        except User.DoesNotExist:
+            return True
 
     @staticmethod
     def validate_password():
@@ -231,22 +233,32 @@ class RegisterView(View):
         CredentialValidator.credential_data['password'] =   request.POST.get('password')
         CredentialValidator.credential_data['password2'] =  request.POST.get('password2')
 
-
-        # validation placeholder
-        def validate_data(self):
-            pass
-
-
-        User.objects.create_user(
-            username=       CredentialValidator.credential_data['email'],
-            first_name=     CredentialValidator.credential_data['name'],
-            last_name=      CredentialValidator.credential_data['surname'],
-            email=          CredentialValidator.credential_data['email'],
-            password=       CredentialValidator.credential_data['password']
+        msg = CredentialValidator.validation_output(
+            'password',
+            'email',
+            'username'
         )
 
-        return redirect('/login/')
+        if msg == []:
+            User.objects.create_user(
+                username=       CredentialValidator.credential_data['email'],
+                first_name=     CredentialValidator.credential_data['name'],
+                last_name=      CredentialValidator.credential_data['surname'],
+                email=          CredentialValidator.credential_data['email'],
+                password=       CredentialValidator.credential_data['password']
+            )
 
+            return redirect('/login/')
+
+        else:
+            return render(
+            request,
+            'register.html',
+            context={
+                'msg': msg
+            }
+        )
+ 
 
 class LogoutView(View):
 
