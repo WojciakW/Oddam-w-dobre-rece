@@ -199,6 +199,10 @@ document.addEventListener("DOMContentLoaded", function() {
       // Next step
       this.$next.forEach(btn => {
         btn.addEventListener("click", e => {
+          if (!this.checkValidInput()) {
+            alert("Wybierz co najmniej jeden rodzaj rzeczy.");
+            return null;
+          }
           e.preventDefault();
           this.currentStep++;
           this.updateForm();
@@ -209,6 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // Previous step
       this.$prev.forEach(btn => {
         btn.addEventListener("click", e => {
+          this.checkValidInput();
           e.preventDefault();
           this.currentStep--;
           this.updateForm();
@@ -225,6 +230,8 @@ document.addEventListener("DOMContentLoaded", function() {
      * Show next or previous section etc.
      */
     updateForm() {
+      document.querySelector('div[data-step="3"]').querySelector('h3').innerText="Wybierz organizacje, której chcesz pomóc"
+      document.querySelector('div[data-step="3"]').querySelector('.next-step').style.display = 'inline-block';
       this.$step.innerText = this.currentStep;
 
       // TODO: Validation
@@ -239,7 +246,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
-
 
       if (this.currentStep === 3) {
 
@@ -266,7 +272,15 @@ document.addEventListener("DOMContentLoaded", function() {
             div.hidden = false;
           }
         }
+        for (const div of this.$div) {
 
+          if (div.hidden === false) {
+            return null;
+          }
+        
+        }
+        document.querySelector('div[data-step="3"]').querySelector('h3').innerText="Niestety żadna organizacja nie spełnia kryterium wybranych prez Ciebie rzeczy"
+        document.querySelector('div[data-step="3"]').querySelector('.next-step').style.display = 'none';
       }
 
       if (this.currentStep === 5){
@@ -336,11 +350,28 @@ document.addEventListener("DOMContentLoaded", function() {
         else {
           this.categories[inputValue][0] = false;
         }
-
       }
-
     }
 
+    checkValidInput() {
+      let checkedAny = false;
+
+      if (this.currentStep === 1) {
+
+        for (const input of this.$checkbox) {
+
+          if (input.checked === true) {
+            checkedAny = true;
+            break;
+          }
+        }
+      }
+      else {
+        return true;
+      }
+
+      return checkedAny;
+    }
 
     /**
      * Submit form
