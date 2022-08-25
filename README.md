@@ -23,3 +23,10 @@ Basically my job was to write all the Django back-end from scratch and add some 
 - Django 4.0,
 - PostgreSQL Database,
 - Vanilla JS
+
+## Gallery
+![1](https://github.com/WojciakW/Oddam-w-dobre-rece/blob/master/imgs/1.png)
+![2](https://github.com/WojciakW/Oddam-w-dobre-rece/blob/master/imgs/2.png)
+![3](https://github.com/WojciakW/Oddam-w-dobre-rece/blob/master/imgs/4.png)
+![4](https://github.com/WojciakW/Oddam-w-dobre-rece/blob/master/imgs/4.png)
+![5](https://github.com/WojciakW/Oddam-w-dobre-rece/blob/master/imgs/5.png)
